@@ -13,17 +13,308 @@ import { useUserContext } from '../context/user_context'
 import { formatPrice } from '../utils/helpers'
 import { useHistory } from 'react-router-dom'
 
+
+
+
+
+
+const promise = loadStripe(process.env.REACT_APP_STRIPE_PUBLIC_KEY);
+
+
 const CheckoutForm = () => {
-  return <h4>hello from Stripe Checkout </h4>
+
+  const {user} = useUserContext()
+  const{total_amount, shipping_fee} = useCartContext()
+
+  const tot = formatPrice(total_amount + shipping_fee)
+  
+
+  const [succeeded, setSucceeded] = useState(false);
+  const [error, setError] = useState(null);
+  const [processing, setProcessing] = useState('');
+  const [disabled, setDisabled] = useState(true);
+  const [clientSecret, setClientSecret] = useState('');
+  const stripe = useStripe();
+  const elements = useElements();
+
+    const cardStyle = {
+    style: {
+      base: {
+        color: "#32325d",
+        fontFamily: 'Arial, sans-serif',
+        fontSmoothing: "antialiased",
+        fontSize: "16px",
+        "::placeholder": {
+          color: "#32325d"
+        }
+      },
+      invalid: {
+        fontFamily: 'Arial, sans-serif',
+        color: "#fa755a",
+        iconColor: "#fa755a"
+      }
+    }
+  };
+
+    const handleChange = async (event) => {
+    // Listen for changes in the CardElement
+    // and display any errors as the customer types their card details
+    setDisabled(event.empty);
+    setError(event.error ? event.error.message : "");
+  };
+
+  const handleSubmit = async ev => {
+    ev.preventDefault();
+    setProcessing(true);
+
+    const payload = await stripe.confirmCardPayment(clientSecret, {
+      payment_method: {
+        card: elements.getElement(CardElement)
+      }
+    });
+
+    if (payload.error) {
+      setError(`Payment failed ${payload.error.message}`);
+      setProcessing(false);
+    } else {
+      setError(null);
+      setProcessing(false);
+      setSucceeded(true);
+    }
+  };
+
+  return (
+<>
+
+
+<article>
+<h4>Hello, {user.nickname}</h4>
+<p>Your total is {tot}</p>
+<p>Test Card Number: 4242 4242 4242 4242</p>
+</article>
+
+
+    <form id="payment-form" onSubmit={handleSubmit}>
+      <CardElement id="card-element" options={cardStyle} onChange={handleChange} />
+      <button
+        disabled={processing || disabled || succeeded}
+        id="submit"
+      >
+        <span id="button-text">
+          {processing ? (
+            <div className="spinner" id="spinner"></div>
+          ) : (
+            "Pay now"
+          )}
+        </span>
+      </button>
+      {/* Show any error that happens when processing the payment */}
+      {error && (
+        <div className="card-error" role="alert">
+          {error}
+        </div>
+      )}
+      {/* Show a success message upon completion */}
+      <p className={succeeded ? "result-message" : "result-message hidden"}>
+        Payment succeeded, see the result in your
+        <a
+          href={`https://dashboard.stripe.com/test/payments`}
+        >
+          {" "}
+          Stripe dashboard.
+        </a> Refresh the page to pay again.
+      </p>
+    </form>
+
+
+
+
+    </>
+  );
 }
+    
+
+
+
 
 const StripeCheckout = () => {
   return (
     <Wrapper>
-      <CheckoutForm />
-    </Wrapper>
-  )
+    <Elements stripe={promise}>
+    <CheckoutForm />
+    </Elements>
+  </Wrapper>
+)
+
+
 }
+
+
+
+
+
+
+
+
+// if 'succeeded' is true: 
+{/* <article>
+<h4>Thank you</h4>
+<h4>Your Payment was successfull!</h4>
+<h4>Redirecting to home page shortly</h4>
+</article> */}
+// otherwise
+{/* <article>
+<h4>Hello, 'qui va il nome dello user'</h4>
+<p>Your total is 'qui va il totale compreso di fees</p>
+<p>Test Card Number: 'qui aggiungi un test card number'</p>
+</article> */}
+
+
+
+
+
+
+
+// import React from "react";
+// import { loadStripe } from "@stripe/stripe-js";
+// import { Elements } from "@stripe/react-stripe-js";
+// import CheckoutForm from "./CheckoutForm";
+// import "./App.css";
+
+// Make sure to call loadStripe outside of a component’s render to avoid
+// recreating the Stripe object on every render.
+// This is your test publishable API key.
+// const promise = loadStripe("pk_test_51L1pZCLUleE33HYrizl75u1SDKRbhy9mtCRmVdBtZAqK0RmO8Bd2AD6GwMxeRFelNlOzyDL9NVTQFCHRohaVesAX00d6KB40I3");
+
+// export default function App() {
+//   return (
+//     <div className="App">
+//       <Elements stripe={promise}>
+//         <CheckoutForm />
+//       </Elements>
+//     </div>
+//   );
+// }
+
+
+// --------------------------------------------------------------------------------------------------
+
+// import React, { useState, useEffect } from "react";
+// import {
+//   CardElement,
+//   useStripe,
+//   useElements
+// } from "@stripe/react-stripe-js";
+
+// export default function CheckoutForm() {
+//   const [succeeded, setSucceeded] = useState(false);
+//   const [error, setError] = useState(null);
+//   const [processing, setProcessing] = useState('');
+//   const [disabled, setDisabled] = useState(true);
+//   const [clientSecret, setClientSecret] = useState('');
+//   const stripe = useStripe();
+//   const elements = useElements();
+
+//   useEffect(() => {
+//     // Create PaymentIntent as soon as the page loads
+//     window
+//       .fetch("/create-payment-intent", {
+//         method: "POST",
+//         headers: {
+//           "Content-Type": "application/json"
+//         },
+//         body: JSON.stringify({items: [{ id: "xl-tshirt" }]})
+//       })
+//       .then(res => {
+//         return res.json();
+//       })
+//       .then(data => {
+//         setClientSecret(data.clientSecret);
+//       });
+//   }, []);
+
+//   const cardStyle = {
+//     style: {
+//       base: {
+//         color: "#32325d",
+//         fontFamily: 'Arial, sans-serif',
+//         fontSmoothing: "antialiased",
+//         fontSize: "16px",
+//         "::placeholder": {
+//           color: "#32325d"
+//         }
+//       },
+//       invalid: {
+//         fontFamily: 'Arial, sans-serif',
+//         color: "#fa755a",
+//         iconColor: "#fa755a"
+//       }
+//     }
+//   };
+
+//   const handleChange = async (event) => {
+//     // Listen for changes in the CardElement
+//     // and display any errors as the customer types their card details
+//     setDisabled(event.empty);
+//     setError(event.error ? event.error.message : "");
+//   };
+
+//   const handleSubmit = async ev => {
+//     ev.preventDefault();
+//     setProcessing(true);
+
+//     const payload = await stripe.confirmCardPayment(clientSecret, {
+//       payment_method: {
+//         card: elements.getElement(CardElement)
+//       }
+//     });
+
+//     if (payload.error) {
+//       setError(`Payment failed ${payload.error.message}`);
+//       setProcessing(false);
+//     } else {
+//       setError(null);
+//       setProcessing(false);
+//       setSucceeded(true);
+//     }
+//   };
+
+//   return (
+//     <form id="payment-form" onSubmit={handleSubmit}>
+//       <CardElement id="card-element" options={cardStyle} onChange={handleChange} />
+//       <button
+//         disabled={processing || disabled || succeeded}
+//         id="submit"
+//       >
+//         <span id="button-text">
+//           {processing ? (
+//             <div className="spinner" id="spinner"></div>
+//           ) : (
+//             "Pay now"
+//           )}
+//         </span>
+//       </button>
+//       {/* Show any error that happens when processing the payment */}
+//       {error && (
+//         <div className="card-error" role="alert">
+//           {error}
+//         </div>
+//       )}
+//       {/* Show a success message upon completion */}
+//       <p className={succeeded ? "result-message" : "result-message hidden"}>
+//         Payment succeeded, see the result in your
+//         <a
+//           href={`https://dashboard.stripe.com/test/payments`}
+//         >
+//           {" "}
+//           Stripe dashboard.
+//         </a> Refresh the page to pay again.
+//       </p>
+//     </form>
+//   );
+// }
+
+
 
 const Wrapper = styled.section`
   form {
@@ -164,5 +455,18 @@ const Wrapper = styled.section`
     }
   }
 `
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 export default StripeCheckout

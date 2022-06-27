@@ -1,8 +1,27 @@
 import React from 'react'
 import styled from 'styled-components'
 const Footer = () => {
-  return <h4>footer</h4>
+
+  return(
+
+<Wrapper>
+<h5>&copy; {new Date().getFullYear()} <span>ComfySloth</span></h5>
+<h5>All rights reserved</h5>
+
+  </Wrapper>
+
+  ) 
 }
+
+{/* <Wrapper>
+  h5 - qui va la 'c' di company con l'anno corrente
+  span - ComfySloth
+  /h5
+  h5 - All rights reserved
+</Wrapper> */}
+
+
+
 
 const Wrapper = styled.footer`
   height: 5rem;

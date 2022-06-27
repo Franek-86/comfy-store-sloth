@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { Component } from 'react'
 import logo from '../assets/logo.svg'
 import { Link } from 'react-router-dom'
 import { useProductsContext } from '../context/products_context'
@@ -8,9 +8,66 @@ import styled from 'styled-components'
 import CartButtons from './CartButtons'
 import { useUserContext } from '../context/user_context'
 
+
 const Sidebar = () => {
-  return <h4>sidebar</h4>
+ const {isAuthenticated}  = useUserContext()
+  const {isSidebarOpen, closeSidebar} = useProductsContext()
+  // const [isSidebarOpen, setisSidebarOpen] = React.useState(false)
+  return (
+
+    <SidebarContainer>
+
+<aside className={isSidebarOpen ? 'sidebar show-sidebar' : 'sidebar'}>
+
+  <div className="sidebar-header">
+    <img src={logo} alt="comfy slot" className="logo" />
+    <button className="close-btn" onClick={closeSidebar}><FaTimes/></button>
+  </div>
+  <ul className="links">
+{links.map((i)=>{
+  const {id, text, url} = i
+  return <li key={id}>
+    <a href={url}>{text}</a>
+  </li>
+})}
+{isAuthenticated && <li><a href='/checkout'>checkout</a></li>}
+  </ul>
+  <CartButtons/>
+</aside>
+    </SidebarContainer>
+  )
 }
+// - crea una costante boolean temporanea (serve per mostrare o meno la Sidebar che qui in basso riporto). E' temporanea perche' la spostero' sul context.
+
+// SidebarContainer
+// aside - avra' classe di 'sidebar' e 'show-sidebar' se la costante di sopra sara' true (inizialmente la posso cambiare solo manualmente) oppure solo di 'sidebar' se la costante e' false.
+// div.sidebar-header 
+// immagine del logo con classe di 'logo' e testo alternativo di  'comfy sloth'
+// bottone con classe di 'close-btn' rappresentato dall'icona importata.
+// /div
+// unordered list classe 'links'
+// itera tra i links (gia importati su) e per ognuno riporta il LINK
+// finito di iterare aggiiungi un altro list item in basso con il LINK per il 'checkout', il testo sara' checkout e il path '/checkout', eventualmente sara' dynamic ma per ora lo aggiunge cosi e basta. Quando lo rendero' dynimic fara' in modo che il link sia visibile solo quando sono loggato.
+// /unorderedlist
+// aggoiungi cart Component
+// /aside
+// /SidebarContainer
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 const SidebarContainer = styled.div`
   text-align: center;

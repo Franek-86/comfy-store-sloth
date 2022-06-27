@@ -1,9 +1,39 @@
 import React from 'react'
 import styled from 'styled-components'
+import { useForm, ValidationError } from '@formspree/react';
 
 const Contact = () => {
-  return <h4>contact section</h4>
+  const [state, handleSubmit] = useForm("xnqwrqrq");
+  return (
+    <Wrapper>
+      <div className="section-center">
+        <h3>Join our newsletter and get 20% off</h3>
+        <div className="content">
+          <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Perspiciatis cum eos placeat, repellendus aspernatur quo numquam saepe dolores nihil doloremque!</p>
+          <form action="https://formspree.io/f/xnqwrqrq" method="POST" encType="multipart/form-data"className="contact-form" >
+            <input className='form-input' type="email" name="email" id="" placeholder='Enter Email'/>
+            <button type='submit' className="submit-btn">subscribe</button>
+          </form>
+        </div>
+      </div>
+    </Wrapper>
+  )
 }
+
+
+
+
+
+
+
+
+
+// https://formspree.io/
+
+
+
+
+
 const Wrapper = styled.section`
   padding: 5rem 0;
   h3 {

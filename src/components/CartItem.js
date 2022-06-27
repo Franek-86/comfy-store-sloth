@@ -4,9 +4,59 @@ import { formatPrice } from '../utils/helpers'
 import AmountButtons from './AmountButtons'
 import { FaTrash } from 'react-icons/fa'
 import { useCartContext } from '../context/cart_context'
-const CartItem = () => {
-  return <h4>cart item</h4>
+const CartItem = ({item}) => {
+
+const {color, id, max: stock, name, price, images} = item
+const {total_amount, removeItem} = useCartContext()
+
+const [amount, setAmount]= React.useState(item.amount)
+
+
+
+
+
+  return (
+<Wrapper>
+  <div className="title">
+    <img src={images} alt={name} />
+    <div>
+  <h5 className="name">{name}</h5>
+  <p className="color">
+    color : <span style={{background: color}}></span>
+  </p>
+  <h5 className="price-small">{formatPrice(price)}</h5>
+    </div>
+  </div>
+  <h5 className="price">{formatPrice(price)}</h5>
+  <AmountButtons amount={amount} setAmount={setAmount} stock={stock} id={id}/>
+  <h5 className="subtotal">{formatPrice(price * amount)}</h5>
+  <button className="remove-btn" onClick={()=>removeItem(id)}>  <FaTrash/></button>
+
+</Wrapper>
+
+
+  )
 }
+
+
+{/* <Wrapper>
+  <div className="title">
+    <img src="" alt="" />
+<div>
+  <h5 className="name">qui va il nome</h5>
+  <p className="color">
+    color: <span>neinet nello span ma mettigli un background  del colore dell'item</span>
+  </p>
+  <h5 className="price-small">qui va il prezzo</h5>
+  </div>
+  </div>
+  <h5 className="price">qui va il prezzo</h5>
+  <AmountButtons/>
+  <h5 className="subtotal">qui va il prezzo totale</h5>
+  <button className="remove-btn"></button>
+  <FaTrash/>
+</Wrapper> */}
+
 
 const Wrapper = styled.article`
   .subtotal {

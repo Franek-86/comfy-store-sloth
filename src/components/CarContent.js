@@ -5,10 +5,42 @@ import { Link } from 'react-router-dom'
 import CartColumns from './CartColumns'
 import CartItem from './CartItem'
 import CartTotals from './CartTotals'
+import cart_reducer from '../reducers/cart_reducer'
 
 const CartContent = () => {
-  return <h4>cart content </h4>
+const {cart, clearCart} = useCartContext()
+
+  return (
+<Wrapper className='section section-center'>
+<CartColumns/>
+{cart.map((item)=>{
+return <CartItem key={item.id} item={item}/>
+})}
+<hr />
+<div className="link-container">
+  <Link className='link-btn' to='/products'>continue shopping</Link>
+  <button className="link-btn clear-btn" onClick={clearCart}>clear shopping cart</button>
+</div>
+<CartTotals/>
+</Wrapper>
+  )
 }
+
+{/* <Wrapper className='section section-center'>
+<CartColumns/>
+... 
+<CartItem/>
+horizzontal line
+<div className="link-container">
+  LINK con classe di 'link-btn' alla pagina products e con testo di 'continue shopping'
+  <button className="link-btn clear-btn">
+    clear shopping cart
+  </button>
+</div>
+<CartTotals/>
+</Wrapper> */}
+
+
 const Wrapper = styled.section`
   .link-container {
     display: flex;

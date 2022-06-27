@@ -1,7 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
 import logo from '../assets/logo.svg'
-import { FaBars } from 'react-icons/fa'
+import { FaBars, FaSolarPanel } from 'react-icons/fa'
 import { Link } from 'react-router-dom'
 import { links } from '../utils/constants'
 import CartButtons from './CartButtons'
@@ -9,8 +9,44 @@ import { useProductsContext } from '../context/products_context'
 import { useUserContext } from '../context/user_context'
 
 const Nav = () => {
-  return <h4>navbar</h4>
+  const {isSidebarOpen, openSidebar, closeSidebar}= useProductsContext()
+  const {isAuthenticated} = useUserContext()
+
+  return (
+  <NavContainer>
+<div className="nav-center">
+  <div className="nav-header">
+    <a href='/'><img src={logo} alt="comfy slot" /></a>
+<button className="nav-toggle" onClick={openSidebar}><FaBars/></button>
+  </div>
+<ul className="nav-links">
+ {links.map((i)=> {
+    const {id, text, url} = i
+    return <li key={id}><Link to={url}>{text}</Link></li>
+  })}
+  {isAuthenticated && <li><Link to='/checkout'>checkout</Link></li>}
+</ul>
+{<CartButtons/>}
+</div>
+</NavContainer> 
+  )
 }
+
+
+{/* <NavContainer>
+<div className="navcenter">
+  <div className="nav-header">
+    - qui va il logo (alternative name di 'comfy slot) che e' anche un LINK alla home page.
+- qui va la bars icon che e' un BOTTONE con classe di 'nav-toggle'.
+  </div>
+
+- unordered list con classe di 'nav-links' e poi itera tra i link e riporta un LINK con l'url e il text su cui cliccare
+-qui va il CartButtons component
+</div>
+</NavContainer> */}
+
+
+// Nella unordered list di sopra piu' tardi dovro' aggiungeren in coda un altro LINK to the checkout page con testo di 'checkout' da mostrare solo quando sono gia' loggato.
 
 const NavContainer = styled.nav`
   height: 5rem;

@@ -1,9 +1,24 @@
 import React from 'react'
 import styled from 'styled-components'
 import { Link } from 'react-router-dom'
-const PageHero = () => {
-  return <h4>page hero</h4>
+const PageHero = ({title, product, name}) => {
+
+  return (
+    <Wrapper>
+      <div className="section-center">
+        <h3><Link to='/'>home /</Link>{product ? <Link to='/Products'>{title}</Link>: title} {product && `/ ${name}`}</h3>
+      </div>
+    </Wrapper>
+  )
 }
+
+// prova una cosa simile {product && <Link to={title}>}
+// wrapper 
+// div classe 'section-center'
+// h3 - qui va il LINK che manda alla Home (con il testo di home) e accanto alla scritta home va il nome della pagina su cui mi trovo
+// /div
+// /wrapper
+
 
 const Wrapper = styled.section`
   background: var(--clr-primary-10);
